@@ -27,12 +27,13 @@ export function HomeDashboard({ className, pessoa }: Props) {
   const [cadeiras, setCadeiras] = useState<Disciplina[]>([]);
   const [faturas, setFaturas] = useState<number>(0);
   const [alunos, setAlunos] = useState<number>(0);
+  const [aulasMinistradas, setAulasMinistradas] = useState<number>(0);
+  const [provasCorrigidas, setProvasCorrigidas] = useState<number>(0);
 
   useEffect(() => {
     const pegarAluno = async () => {
       const cadeiras = await Api.pegarDisciplinas(pessoa?.idPessoa);
       const faturas = await Api.pegarFaturas(pessoa.idPessoa);
-
       if (cadeiras && faturas) {
         setCadeiras(cadeiras);
         setFaturas(faturas.length);
@@ -41,9 +42,12 @@ export function HomeDashboard({ className, pessoa }: Props) {
 
     const pegarProfessor = async () => {
       const alunos = await Api.pegarQntdAlunos(pessoa?.idPessoa);
-
-      if (alunos) {
+      const provasCorrigidas = await Api.provasCorrigidas(pessoa?.idPessoa);
+      const aulasMinistradas = await Api.aulasMinistradas(pessoa?.idPessoa);
+      if (alunos && provasCorrigidas && aulasMinistradas) {
         setAlunos(alunos.quantidade_alunos);
+        setProvasCorrigidas(provasCorrigidas.corrigidas);
+        setAulasMinistradas(aulasMinistradas.total_aulas);
       }
     };
 
@@ -77,12 +81,12 @@ export function HomeDashboard({ className, pessoa }: Props) {
               />
               <BlocoDashboard
                 Icone={BookOpenCheck}
-                titulo={2}
+                titulo={provasCorrigidas}
                 descricacao="Provas corrigidas"
               />
               <BlocoDashboard
                 Icone={BookCheck}
-                titulo={30}
+                titulo={aulasMinistradas}
                 descricacao="Aulas ministradas"
               />
             </div>

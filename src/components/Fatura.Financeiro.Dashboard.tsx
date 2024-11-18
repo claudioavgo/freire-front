@@ -62,7 +62,7 @@ export function FaturaFinanceiro({
                 (fatura.status ? "text-muted-foreground" : "")
               }
             >
-              Fatura {mesNome}
+              Fatura {mesNome} - {fatura.data_pagamento.split("-")[2]}/{fatura.data_pagamento.split("-")[1]}
             </h1>
             <div
               className={`flex justify-start items-center w-fit px-2 rounded mt-1 ${

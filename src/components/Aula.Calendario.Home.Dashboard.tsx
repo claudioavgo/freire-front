@@ -27,7 +27,7 @@ export function AulaCalendario({
         <BookText />
       </div>
       <div className="w-full">
-        <h1 className="font-bold">{disciplina}</h1>
+      <h1 className="font-bold"> {disciplina} {isProva && <span className="font-normal text-muted-foreground"> | Prova</span>}</h1>
         <div className="flex space-x-5 w-full">
           <div className="flex justify-center items-center space-x-1">
             <Clock2 size={"1rem"} />

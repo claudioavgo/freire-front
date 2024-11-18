@@ -106,7 +106,7 @@ export function DisciplinaMatriculada({
                 descricao="Quantidade de faltas"
               />
               <AtributoDisciplinaMatriculada
-                titulo={media}
+                titulo={media.toFixed(2)}
                 descricao="Sua média geral"
               />
             </div>

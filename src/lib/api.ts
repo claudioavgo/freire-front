@@ -11,6 +11,7 @@ import { AvaliacaoCriada } from "@/types/avaliacaoCriada.type";
 import { ResultadoAvaliacao } from "@/types/resultadoAvaliacao.type";
 import { AlunoMatriculado } from "@/types/alunoMatriculado.type";
 import { Agenda } from "@/types/agenda.type";
+import { adicionarPessoa, Pessoa, PessoaInput } from "@/types/pessoa.type";
 
 export class Api {
   private static readonly baseUrl = "https://api.freire.app/api";
@@ -404,6 +405,76 @@ export class Api {
       return response.data;
     } catch (error) {
       console.error("Erro ao buscar aulas:", error);
+      return null;
+    }
+  }
+
+  static async provasCorrigidas(idProfessor: number) {
+    try {
+      const response = await axios.get(
+        this.baseUrl + `/professor/${idProfessor}/corrigidas`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar aulas:", error);
+      return null;
+    }
+  }
+
+  static async aulasMinistradas(idProfessor: number) {
+    try {
+      const response = await axios.get(
+        this.baseUrl + `/professor/${idProfessor}/aulas-ministradas`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar aulas:", error);
+      return null;
+    }
+  }
+
+  static async pegarPessoas(): Promise<PessoaInput[] | null> {
+    try {
+      const response = await axios.get<PessoaInput[]>(
+        this.baseUrl + `/pessoas`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar pessoas:", error);
+      return null;
+    }
+  }
+
+  static async adicionarPessoa(novaPessoa: adicionarPessoa) {
+    try {
+      const response = await axios.post<PessoaInput>(
+        this.baseUrl + `/secretaria/cadastrar`,
+        novaPessoa,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao adicionar pessoa:", error);
       return null;
     }
   }

@@ -105,6 +105,15 @@ export function TabelaAvaliacoes({
       {
         header: "Data",
         accessorKey: "data",
+        cell: ({ row }) => {
+          const dataOriginal = row.original.data;
+          const dataFormatada = new Date(dataOriginal).toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          });
+          return dataFormatada;
+        },
       },
       {
         header: "Ações",
@@ -130,9 +139,7 @@ export function TabelaAvaliacoes({
                 >
                   Editar Avaliação
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => deletarAvaliacao(id_avaliacao)}
-                >
+                <DropdownMenuItem onClick={() => deletarAvaliacao(id_avaliacao)}>
                   Deletar Avaliação
                 </DropdownMenuItem>
               </DropdownMenuContent>

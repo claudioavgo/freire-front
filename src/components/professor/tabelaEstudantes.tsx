@@ -59,10 +59,21 @@ export function TabelaEstudantes({ alunos }: Props) {
       {
         header: "Notas",
         accessorKey: "notas",
+        cell: ({ row }) => {
+          const notas = row.original.notas;
+          if (Array.isArray(notas)) {
+            return notas.join(' | ');
+          }
+          if (typeof notas === 'string') {
+            return notas.split(',').join(' | ');
+          }
+          return notas;
+        },
       },
     ],
     []
   );
+  
 
   const table = useReactTable({
     data: alunos,

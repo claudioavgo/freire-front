@@ -61,7 +61,13 @@ import {
 import { usePessoaContext } from "@/contexts/pessoa-context";
 import { toast } from "sonner";
 
-export function PessoasDashboard() {
+interface PessoasDashboardProps {
+
+    pessoa: Pessoa;
+  
+  }
+
+export function PessoasDashboard({pessoa}) {
   const [data, setData] = useState<Pessoa[]>([]);
   const { pessoa: pessoaLogada } = usePessoaContext();
 

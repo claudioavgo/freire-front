@@ -2,6 +2,7 @@
 
 import { DisciplinasDashboard } from "@/components/Disciplinas.Dashboard";
 import { FinanceiroDashboard } from "@/components/Financeiro.Dashboard";
+import { PessoasDashboard } from "@/components/funcionario/pessoas.dashboard";
 import { HomeDashboard } from "@/components/Home.Dashboard";
 import { usePessoaContext } from "@/contexts/pessoa-context";
 import { useSidebarContext } from "@/contexts/sidebar-context";
@@ -26,8 +27,10 @@ export default function Dashboard() {
         <p>Seja bem-vindo(a) de volta, {pessoa?.nome.split(" ")[0]}!</p>
       </div>
       {selectedButton === "Home" && <HomeDashboard pessoa={pessoa} />}
+      {selectedButton === "Pessoas" && <PessoasDashboard pessoa={pessoa} />}
       {selectedButton === "Disciplinas" && (
         <DisciplinasDashboard pessoa={pessoa} />
+        
       )}
       {selectedButton === "Financeiro" && (
         <FinanceiroDashboard pessoa={pessoa} />

@@ -61,7 +61,7 @@ export function TabelaRendimento({ className, pessoa }: Props) {
 
     return Object.keys(mediaAvaliacoes).map((cadeira) => ({
       cadeira,
-      media: mediaAvaliacoes[cadeira].total / mediaAvaliacoes[cadeira].count,
+      media: Number(mediaAvaliacoes[cadeira].total / mediaAvaliacoes[cadeira].count).toFixed(2),
     }));
   };
 

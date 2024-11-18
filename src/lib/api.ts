@@ -407,4 +407,38 @@ export class Api {
       return null;
     }
   }
+
+  static async provasCorrigidas(idProfessor: number) {
+    try {
+      const response = await axios.get(
+        this.baseUrl + `/professor/${idProfessor}/corrigidas`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar aulas:", error);
+      return null;
+    }
+  }
+
+  static async aulasMinistradas(idProfessor: number) {
+    try {
+      const response = await axios.get(
+        this.baseUrl + `/professor/${idProfessor}/aulas-ministradas`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar aulas:", error);
+      return null;
+    }
+  }
 }

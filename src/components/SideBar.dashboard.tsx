@@ -1,7 +1,6 @@
 "use client";
 
 import { BookCopy, Home, Landmark, Settings } from "lucide-react";
-
 import {
   Sidebar,
   SidebarContent,
@@ -18,9 +17,9 @@ import {
 import { MenuPessoaSidebar } from "./MenuPessoa.Sidebar.Dashboard";
 import { useSidebarContext } from "@/contexts/sidebar-context";
 import { usePessoaContext } from "@/contexts/pessoa-context";
+
 export function SidebarDashboard() {
   const { selectedButton, setSelectedButton } = useSidebarContext();
-
   const { pessoa } = usePessoaContext();
 
   let items = [
@@ -32,21 +31,22 @@ export function SidebarDashboard() {
       title: "Disciplinas",
       icon: BookCopy,
     },
-    {
-      title: "Financeiro",
-      icon: Landmark,
-    },
   ];
 
-  if (pessoa?.tipo === "professor") {
+  if (pessoa?.tipo === "aluno") {
     items = [
+      ...items,
       {
-        title: "Home",
-        icon: Home,
+        title: "Financeiro",
+        icon: Landmark,
       },
+    ];
+  } else if (pessoa?.tipo === "funcionario") {
+    items = [
+      ...items,
       {
-        title: "Disciplinas",
-        icon: BookCopy,
+        title: "Configurações",
+        icon: Settings,
       },
     ];
   }
@@ -78,7 +78,7 @@ export function SidebarDashboard() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={selectedButton == item.title ? true : false}
+                    isActive={selectedButton === item.title}
                   >
                     <button onClick={() => setSelectedButton(item.title)}>
                       <item.icon />

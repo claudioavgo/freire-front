@@ -8,7 +8,7 @@ import { Label } from "./ui/label";
 import { LoaderCircle } from "lucide-react";
 import { TextEffect } from "./motion-ui/text-effect";
 
-// TESTETESTE
+// TESTETESTETESTE
 
 interface LoginTipsProps {
   className?: string;

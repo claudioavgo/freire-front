@@ -39,18 +39,15 @@ const AdicionarAvaliacao = ({
   const enviar = async () => {
     if (date && name) {
       try {
-          await Api.criarProva(
-            disciplinaMinistrada.id_disciplina,
-            name,
-            `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
-
-          );
+        await Api.criarProva(
+          disciplinaMinistrada.id_disciplina,
+          name,
+          `${date.getFullYear()}-${(date.getMonth() + 1)
+            .toString()
+            .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`
+        );
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error("Erro ao criar prova - Detalhes:", error.response?.data);
-        } else {
-          console.error("Erro desconhecido:", error);
-        }
+        console.error("Erro desconhecido:", error);
       }
 
       toast("Prova criada com sucesso", {

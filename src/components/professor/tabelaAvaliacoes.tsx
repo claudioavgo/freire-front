@@ -106,8 +106,8 @@ export function TabelaAvaliacoes({
         header: "Data",
         accessorKey: "data",
         cell: ({ row }) => {
-          const dataOriginal = row.original.data;
-          const dataFormatada = new Date(dataOriginal).toLocaleDateString("pt-BR", {
+          const dataLocal = new Date(row.original.data);
+          const dataFormatada = new Date(dataLocal.getTime() + dataLocal.getTimezoneOffset() * 60000).toLocaleDateString("pt-BR", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",

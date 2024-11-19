@@ -500,6 +500,27 @@ export class Api {
     }
   }
 
+  static async adicionarAlunoNaDisciplina(idAluno: number, idDisciplina: number) {
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}/secretaria/adicionar-aluno-disciplina`,
+        {
+          idAluno,
+          idDisciplina,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao adicionar aluno na disciplina:", error);
+      return null;
+    }
+  }
+
   static async registrarChamada(
     idProfessor: number,
     faltas: { idPessoa: number; status: boolean }[]

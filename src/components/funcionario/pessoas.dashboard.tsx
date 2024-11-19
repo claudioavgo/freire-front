@@ -211,6 +211,45 @@ export function PessoasDashboard({pessoa}) {
   const [mostrarCamposAluno, setMostrarCamposAluno] = useState(false);
   const [mostrarCamposProfessor, setMostrarCamposProfessor] = useState(false);
 
+  // Estados para o diálogo de adicionar aluno
+ const [openAdicionarAluno, setOpenAdicionarAluno] = useState(false);
+ const [alunos, setAlunos] = useState<Pessoa[]>([]);
+ const [disciplinas, setDisciplinas] = useState<Disciplina[]>([]);
+ const [alunoSelecionado, setAlunoSelecionado] = useState<number | null>(null);
+ const [disciplinaSelecionada, setDisciplinaSelecionada] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchDados = async () => {
+      try {
+        const alunosResponse = await Api.pegarAlunos();
+        const disciplinasResponse = await Api.pegarDisciplinas();
+        if (alunosResponse) setAlunos(alunosResponse);
+        if (disciplinasResponse) setDisciplinas(disciplinasResponse);
+      } catch (error) {
+        toast.error("Erro ao carregar alunos e disciplinas.");
+      }
+    };
+    fetchDados();
+  }, []);
+
+  const handleAdicionarAlunoADisciplina = async () => {
+    if (alunoSelecionado && disciplinaSelecionada) {
+      try {
+        // Chame a API para adicionar o aluno à disciplina
+        const response = await Api.adicionarAlunoNaDisciplina(alunoSelecionado, disciplinaSelecionada);
+        if (response) {
+          toast.success("Aluno adicionado à disciplina com sucesso!");
+          setOpenAdicionarAluno(false);
+        } else {
+          toast.error("Erro ao adicionar aluno à disciplina.");
+        }
+      } catch (error) {
+        toast.error("Erro ao adicionar aluno à disciplina.");
+      }
+    } else {
+      toast.error("Selecione um aluno e uma disciplina.");
+    }
+  };
   const handleAdicionarPessoa = async () => {
     try {
       if (!novaPessoa.nome || !novaPessoa.email || !novaPessoa.senha) {
@@ -528,6 +567,73 @@ export function PessoasDashboard({pessoa}) {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          <Dialog open={openAdicionarAluno} onOpenChange={setOpenAdicionarAluno}>
+        <DialogTrigger asChild>
+          <Button>Adicionar Aluno</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Adicionar Aluno à Disciplina</DialogTitle>
+            <DialogDescription>
+              Selecione o aluno e a disciplina para adicionar.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            {/* Selecionar Aluno */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="aluno" className="text-right">
+                Aluno
+              </Label>
+              <Select
+                onValueChange={(value) => setAlunoSelecionado(Number(value))}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Selecione um aluno" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Alunos</SelectLabel>
+                    {alunos.map((aluno) => (
+                      <SelectItem key={aluno.id} value={String(aluno.id)}>
+                        {aluno.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            {/* Selecionar Disciplina */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="disciplina" className="text-right">
+                Disciplina
+              </Label>
+              <Select
+                onValueChange={(value) => setDisciplinaSelecionada(Number(value))}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Selecione uma disciplina" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Disciplinas</SelectLabel>
+                    {disciplinas.map((disciplina) => (
+                      <SelectItem key={disciplina.id} value={String(disciplina.id)}>
+                        {disciplina.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleAdicionarAlunoADisciplina}>Adicionar</Button>
+            <Button variant="ghost" onClick={() => setOpenAdicionarAluno(false)}>
+              Cancelar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
         </div>
       </div>
       <div className="rounded-md border">

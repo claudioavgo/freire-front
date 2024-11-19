@@ -565,4 +565,22 @@ export class Api {
       throw error;
     }
   }
+
+  static async deletarPessoa(idPessoa: number) {
+    try {
+      const response = await axios.delete(
+        this.baseUrl + `/pessoas/${idPessoa}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Resposta da API recebida:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao deletar pessoa:", error);
+      return null;
+    }
+  }
 }

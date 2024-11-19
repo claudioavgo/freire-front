@@ -4,6 +4,7 @@ import { Disciplina } from "@/types/disciplina.type";
 import { Fatura } from "@/types/fatura.type";
 import { Falta } from "@/types/faltas.type";
 import { Streak } from "@/types/streak.type";
+import {DisciplinaUnica} from "@/types/disciplinaUnica.type";
 import { Rendimento } from "@/types/rendimento.type";
 import { qntdAlunos } from "@/types/qntdAlunos.type";
 import { DisciplinaMinistrada } from "@/types/disciplinaMinistrada.type";
@@ -460,6 +461,23 @@ export class Api {
     }
   }
 
+  static async pegarDisciplinas(): Promise<DisciplinaUnica[] | null> {
+    try {
+      const response = await axios.get<DisciplinaUnica[]>(
+        this.baseUrl + `/aluno/todas-disciplinas`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar pessoas:", error);
+      return null;
+    }
+  }
+
   static async adicionarPessoa(novaPessoa: adicionarPessoa) {
     try {
       console.log('Payload being sent:', novaPessoa);
@@ -503,7 +521,7 @@ export class Api {
   static async adicionarAlunoNaDisciplina(idAluno: number, idDisciplina: number) {
     try {
       const response = await axios.post(
-        `${this.baseUrl}/secretaria/adicionar-aluno-disciplina`,
+        `${this.baseUrl}/secretaria/cadastrar-disciplina`,
         {
           idAluno,
           idDisciplina,

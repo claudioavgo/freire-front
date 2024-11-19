@@ -63,10 +63,8 @@ import { toast } from "sonner";
 import axios from "axios";
 
 interface PessoasDashboardProps {
-
-    pessoa: Pessoa;
-  
-  }
+  pessoa: Pessoa;
+}
 
 export function PessoasDashboard({pessoa}) {
   const [data, setData] = useState<Pessoa[]>([]);
@@ -214,16 +212,14 @@ export function PessoasDashboard({pessoa}) {
   // Estados para o diálogo de adicionar aluno
  const [openAdicionarAluno, setOpenAdicionarAluno] = useState(false);
  const [alunos, setAlunos] = useState<Pessoa[]>([]);
- const [disciplinas, setDisciplinas] = useState<Disciplina[]>([]);
+ const [disciplinas, setDisciplinas] = useState<DisciplinaUnica[]>([]);
  const [alunoSelecionado, setAlunoSelecionado] = useState<number | null>(null);
  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchDados = async () => {
       try {
-        const alunosResponse = await Api.pegarAlunos();
         const disciplinasResponse = await Api.pegarDisciplinas();
-        if (alunosResponse) setAlunos(alunosResponse);
         if (disciplinasResponse) setDisciplinas(disciplinasResponse);
       } catch (error) {
         toast.error("Erro ao carregar alunos e disciplinas.");
@@ -593,8 +589,8 @@ export function PessoasDashboard({pessoa}) {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Alunos</SelectLabel>
-                    {alunos.map((aluno) => (
-                      <SelectItem key={aluno.id} value={String(aluno.id)}>
+                    {data.map((aluno, index) => (  
+                      <SelectItem key={index} value={String(aluno.id_pessoa)}>
                         {aluno.nome}
                       </SelectItem>
                     ))}
@@ -616,8 +612,8 @@ export function PessoasDashboard({pessoa}) {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Disciplinas</SelectLabel>
-                    {disciplinas.map((disciplina) => (
-                      <SelectItem key={disciplina.id} value={String(disciplina.id)}>
+                    {disciplinas.map((disciplina, index) => (
+                      <SelectItem key={disciplina.id_disciplina} value={String(disciplina.id_disciplina)}>
                         {disciplina.nome}
                       </SelectItem>
                     ))}

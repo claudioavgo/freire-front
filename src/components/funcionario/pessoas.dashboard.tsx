@@ -94,6 +94,17 @@ export function PessoasDashboard({ pessoa }) {
     fetchData();
   }, []);
 
+  const deletarPessoa = async (idPessoa: number) => {
+    const response = await Api.deletarPessoa(idPessoa);
+
+    if (response) {
+      toast.success("Pessoa deletada com sucesso!");
+      setData((prevData) => prevData.filter((p) => p.idPessoa !== idPessoa));
+    } else {
+      toast.error("Erro ao deletar pessoa.");
+    }
+  };
+
   const columns: ColumnDef<Pessoa>[] = [
     {
       accessorKey: "nome",
@@ -141,19 +152,10 @@ export function PessoasDashboard({ pessoa }) {
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => {
-                  // Implementar ação de visualizar detalhes
-                  console.log("Visualizar detalhes de", pessoa.nome);
+                  deletarPessoa(pessoa.idPessoa);
                 }}
               >
-                Ver detalhes
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  // Implementar ação de editar
-                  console.log("Editar", pessoa.nome);
-                }}
-              >
-                Editar
+                Deletar
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

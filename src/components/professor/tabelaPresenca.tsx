@@ -120,7 +120,7 @@ export function TabelaPresenca({ alunos, idProfessor }: Props) {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full">
       <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Filtrando por nome"

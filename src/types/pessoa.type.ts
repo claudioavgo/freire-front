@@ -22,8 +22,8 @@ nome: string,
 rua: string,
 numero: number,
 cidade: string,
-telefone_1: number | null,
-telefone_2: number | null,
+telefone1: number | null,
+telefone2: number | null,
 email: string,
 senha: string,
 data_nascimento: Date,
@@ -34,13 +34,13 @@ tipo: string;
 export interface adicionarPessoa {
   nome: string,
   rua: string,
-  numero: string,
+  numero: number,
   cidade: string,
-  telefone_1: string | null,
-  telefone_2: string | null,
+  telefone1: string | null,
+  telefone2: string | null,
   email: string,
   senha: string,
-  datanascimento: string,
+  dataNascimento: string,
   tipo: number;
   periodo: number | null;
   especializacao: string | null;

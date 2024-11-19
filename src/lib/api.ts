@@ -462,7 +462,9 @@ export class Api {
 
   static async adicionarPessoa(novaPessoa: adicionarPessoa) {
     try {
-      const response = await axios.post<PessoaInput>(
+      console.log('Payload being sent:', novaPessoa);
+  
+      const response = await axios.post(
         this.baseUrl + `/secretaria/cadastrar`,
         novaPessoa,
         {
@@ -471,10 +473,32 @@ export class Api {
           },
         }
       );
-
       return response.data;
     } catch (error) {
-      console.error("Erro ao adicionar pessoa:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Error details:", {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        });
+      }
+      return null;
+    }
+  }
+
+  static async faturasPendentes(idPessoa: number) {
+    try {
+      const response = await axios.get(
+        this.baseUrl + `/aluno/${idPessoa}/faturas-pendentes`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar aulas:", error);
       return null;
     }
   }

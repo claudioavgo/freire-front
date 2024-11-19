@@ -75,7 +75,20 @@ export function PessoasDashboard({pessoa}) {
     const fetchData = async () => {
       const pessoas = await Api.pegarPessoas();
       if (pessoas) {
-        setData(pessoas);
+        const pessoasConverted = pessoas.map(p => ({
+          idPessoa: p.id_pessoa,
+          nome: p.nome,
+          rua: p.rua,
+          numero: String(p.numero),
+          cidade: p.cidade,
+          telefone1: p.telefone1 ? String(p.telefone1) : null,
+          telefone2: p.telefone2 ? String(p.telefone2) : null,
+          email: p.email,
+          senha: p.senha,
+          dataNascimento: new Date(p.data_nascimento),
+          tipo: p.tipo
+        }));
+        setData(pessoasConverted);
       }
     };
     fetchData();
@@ -182,33 +195,63 @@ export function PessoasDashboard({pessoa}) {
   const [novaPessoa, setNovaPessoa] = useState<adicionarPessoa>({
     nome: "",
     rua: "",
-    numero: "",
+    numero: 0,
     cidade: "",
-    telefone_1: "",
-    telefone_2: "",
+    telefone1: "",
+    telefone2: "",
     email: "",
     senha: "",
-    datanascimento: "",
+    dataNascimento: "",
     tipo: 0,
-    periodo: null, // Para Aluno
-    especializacao: "", // Para Professor
-    idSecretaria: pessoaLogada?.idPessoa || 0,
+    periodo: null,
+    especializacao: "",
+    idSecretaria: pessoaLogada?.idPessoa || 0
   });
   const [mostrarCamposAluno, setMostrarCamposAluno] = useState(false);
   const [mostrarCamposProfessor, setMostrarCamposProfessor] = useState(false);
 
   const handleAdicionarPessoa = async () => {
-    const response = await Api.adicionarPessoa(novaPessoa);
-    if (response) {
-      toast.success("Pessoa adicionada com sucesso!");
-      setOpen(false);
-      // Atualiza a lista de pessoas
-      const pessoas = await Api.pegarPessoas();
-      if (pessoas) {
-        setData(pessoas);
+    if (!novaPessoa.nome || !novaPessoa.email || !novaPessoa.senha) {
+      toast.error("Por favor preencha todos os campos obrigatórios");
+      return;
+    }
+  
+    const formattedPessoa = {
+      ...novaPessoa,
+      numero: novaPessoa.numero,
+      dataNascimento: new Date(novaPessoa.dataNascimento).toISOString().split('T')[0],
+      telefone1: novaPessoa.telefone1 || null,
+      telefone2: novaPessoa.telefone2 || null,
+      periodo: novaPessoa.periodo || null,
+      especializacao: novaPessoa.especializacao || null
+    };
+  
+    try {
+      console.log('Dados sendo enviados:', formattedPessoa);
+      
+      const response = await Api.adicionarPessoa(formattedPessoa);
+  
+      if (response && response.status === 201) {
+        toast.success("Pessoa registrada com sucesso!");
+        setOpen(false);
+        const pessoas = await Api.pegarPessoas();
+        if (pessoas) {
+          setData(pessoas);
+        }
+      } else {
+        console.log('Resposta da API:', response);
+        toast.error("Erro ao registrar pessoa.");
       }
-    } else {
-      toast.error("Erro ao adicionar pessoa.");
+    } catch (error: any) {
+      console.error('Erro detalhado:', {
+        message: error?.message,
+        response: error?.response?.data,
+        status: error?.response?.status,
+        stack: error?.stack
+      });
+      
+      const errorMessage = error?.response?.data?.message || error?.message || 'Erro desconhecido';
+      toast.error(`Erro ao registrar pessoa: ${errorMessage}`);
     }
   };
 
@@ -313,11 +356,11 @@ export function PessoasDashboard({pessoa}) {
                   <Input
                     id="datanascimento"
                     type="date"
-                    value={novaPessoa.datanascimento}
+                    value={novaPessoa.dataNascimento}
                     onChange={(e) =>
                       setNovaPessoa({
                         ...novaPessoa,
-                        datanascimento: e.target.value,
+                        dataNascimento: e.target.value,
                       })
                     }
                     className="col-span-3"
@@ -346,7 +389,7 @@ export function PessoasDashboard({pessoa}) {
                     id="numero"
                     value={novaPessoa.numero}
                     onChange={(e) =>
-                      setNovaPessoa({ ...novaPessoa, numero: e.target.value })
+                      setNovaPessoa({ ...novaPessoa, numero: Number(e.target.value) })
                     }
                     className="col-span-3"
                   />
@@ -372,11 +415,11 @@ export function PessoasDashboard({pessoa}) {
                   </Label>
                   <Input
                     id="telefone_1"
-                    value={novaPessoa.telefone_1 || ""}
+                    value={novaPessoa.telefone1 || ""}
                     onChange={(e) =>
                       setNovaPessoa({
                         ...novaPessoa,
-                        telefone_1: e.target.value,
+                        telefone1: e.target.value,
                       })
                     }
                     className="col-span-3"
@@ -389,11 +432,11 @@ export function PessoasDashboard({pessoa}) {
                   </Label>
                   <Input
                     id="telefone_2"
-                    value={novaPessoa.telefone_2 || ""}
+                    value={novaPessoa.telefone2 || ""}
                     onChange={(e) =>
                       setNovaPessoa({
                         ...novaPessoa,
-                        telefone_2: e.target.value,
+                        telefone2: e.target.value,
                       })
                     }
                     className="col-span-3"
@@ -408,7 +451,6 @@ export function PessoasDashboard({pessoa}) {
                     onValueChange={(value) => {
                       const tipoNumerico = parseInt(value, 10);
                       setNovaPessoa({ ...novaPessoa, tipo: tipoNumerico });
-                      // Controla a exibição dos campos adicionais
                       setMostrarCamposAluno(tipoNumerico === 0); // Aluno
                       setMostrarCamposProfessor(tipoNumerico === 1); // Professor
                     }}

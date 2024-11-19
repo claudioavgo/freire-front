@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -17,14 +16,8 @@ import { AvaliacaoCriada } from "@/types/avaliacaoCriada.type";
 import { TabelaAvaliacoes } from "./tabelaAvaliacoes";
 import { Pessoa } from "@/types/pessoa.type";
 import TabelaEstudantes from "./tabelaEstudantes";
+import TabelaPresenca from "./tabelaPresenca"; // Certifique-se de que o caminho está correto
 import { AlunoMatriculado } from "@/types/alunoMatriculado.type";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "../ui/chart";
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
 interface Props {
   className?: string;
@@ -78,8 +71,9 @@ export function VerMaisDisciplinaMinistrada({
       </CardHeader>
       <CardContent className="flex justify-between items-start space-x-5">
         <Tabs defaultValue="Avaliações" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="Avaliações">Avaliações</TabsTrigger>
+            <TabsTrigger value="Presença">Presença</TabsTrigger>
             <TabsTrigger value="Estudantes">Estudantes</TabsTrigger>
           </TabsList>
           <TabsContent value="Avaliações">
@@ -101,6 +95,22 @@ export function VerMaisDisciplinaMinistrada({
                   pegarAvaliacoesCriadas={pegarAvaliacoesCriadas}
                   disciplinaMinistrada={disciplinaMinistrada}
                 />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="Presença">
+            <Card>
+              <CardHeader>
+                <CardTitle>Presença</CardTitle>
+                <CardDescription>
+                  Veja e gerencie a presença dos alunos
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {
+                  
+                }
+                <TabelaPresenca alunos={alunos} idProfessor={pessoa.idPessoa} />
               </CardContent>
             </Card>
           </TabsContent>

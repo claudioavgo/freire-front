@@ -243,7 +243,7 @@ export function PessoasDashboard({pessoa}) {
           setData(pessoas);
         }
       } else if (statusCodeValue === 409) {
-        toast.error(response.data?.body || "Email já cadastrado!");
+        toast.error(response?.data?.body || "Email já cadastrado!");
       } else if (statusCodeValue === 401) {
         toast.error("Não autorizado!");
       } else {

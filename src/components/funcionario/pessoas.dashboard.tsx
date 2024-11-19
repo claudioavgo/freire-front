@@ -61,12 +61,13 @@ import {
 import { usePessoaContext } from "@/contexts/pessoa-context";
 import { toast } from "sonner";
 import axios from "axios";
+import { DisciplinaUnica } from "@/types/disciplinaUnica.type";
 
 interface PessoasDashboardProps {
   pessoa: Pessoa;
 }
 
-export function PessoasDashboard({pessoa}) {
+export function PessoasDashboard({ pessoa }) {
   const [data, setData] = useState<Pessoa[]>([]);
   const { pessoa: pessoaLogada } = usePessoaContext();
 
@@ -74,7 +75,7 @@ export function PessoasDashboard({pessoa}) {
     const fetchData = async () => {
       const pessoas = await Api.pegarPessoas();
       if (pessoas) {
-        const pessoasConverted = pessoas.map(p => ({
+        const pessoasConverted = pessoas.map((p) => ({
           idPessoa: p.id_pessoa,
           nome: p.nome,
           rua: p.rua,
@@ -85,7 +86,7 @@ export function PessoasDashboard({pessoa}) {
           email: p.email,
           senha: p.senha,
           dataNascimento: new Date(p.data_nascimento),
-          tipo: p.tipo
+          tipo: p.tipo,
         }));
         setData(pessoasConverted);
       }
@@ -100,9 +101,7 @@ export function PessoasDashboard({pessoa}) {
         return (
           <Button
             variant="ghost"
-            onClick={() =>
-              column.toggleSorting(column.getIsSorted() === "asc")
-            }
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Nome
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -164,8 +163,9 @@ export function PessoasDashboard({pessoa}) {
   ];
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] =
-    React.useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -204,17 +204,19 @@ export function PessoasDashboard({pessoa}) {
     tipo: 0,
     periodo: null,
     especializacao: "",
-    idSecretaria: pessoaLogada?.idPessoa || 0
+    idSecretaria: pessoaLogada?.idPessoa || 0,
   });
   const [mostrarCamposAluno, setMostrarCamposAluno] = useState(false);
   const [mostrarCamposProfessor, setMostrarCamposProfessor] = useState(false);
 
   // Estados para o diálogo de adicionar aluno
- const [openAdicionarAluno, setOpenAdicionarAluno] = useState(false);
- const [alunos, setAlunos] = useState<Pessoa[]>([]);
- const [disciplinas, setDisciplinas] = useState<DisciplinaUnica[]>([]);
- const [alunoSelecionado, setAlunoSelecionado] = useState<number | null>(null);
- const [disciplinaSelecionada, setDisciplinaSelecionada] = useState<number | null>(null);
+  const [openAdicionarAluno, setOpenAdicionarAluno] = useState(false);
+  const [alunos, setAlunos] = useState<Pessoa[]>([]);
+  const [disciplinas, setDisciplinas] = useState<DisciplinaUnica[]>([]);
+  const [alunoSelecionado, setAlunoSelecionado] = useState<number | null>(null);
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     const fetchDados = async () => {
@@ -232,7 +234,10 @@ export function PessoasDashboard({pessoa}) {
     if (alunoSelecionado && disciplinaSelecionada) {
       try {
         // Chame a API para adicionar o aluno à disciplina
-        const response = await Api.adicionarAlunoNaDisciplina(alunoSelecionado, disciplinaSelecionada);
+        const response = await Api.adicionarAlunoNaDisciplina(
+          alunoSelecionado,
+          disciplinaSelecionada
+        );
         if (response) {
           toast.success("Aluno adicionado à disciplina com sucesso!");
           setOpenAdicionarAluno(false);
@@ -252,30 +257,45 @@ export function PessoasDashboard({pessoa}) {
         toast.error("Por favor, preencha todos os campos obrigatórios.");
         return;
       }
-  
+
       const formattedPessoa = {
         ...novaPessoa,
         numero: novaPessoa.numero,
-        dataNascimento: new Date(novaPessoa.dataNascimento).toISOString().split('T')[0],
+        dataNascimento: new Date(novaPessoa.dataNascimento)
+          .toISOString()
+          .split("T")[0],
         telefone1: novaPessoa.telefone1 || null,
         telefone2: novaPessoa.telefone2 || null,
         periodo: novaPessoa.periodo || null,
         especializacao: novaPessoa.especializacao || null,
       };
-  
-      console.log('Dados sendo enviados:', formattedPessoa);
-  
+
+      console.log("Dados sendo enviados:", formattedPessoa);
+
       const response = await Api.adicionarPessoa(formattedPessoa);
-      console.log('Resposta completa:', response);
-  
+      console.log("Resposta completa:", response);
+
       const statusCodeValue = response?.data?.statusCodeValue;
-      console.log('statusCodeValue:', statusCodeValue);
+      console.log("statusCodeValue:", statusCodeValue);
       if (statusCodeValue === 201) {
         toast.success("Pessoa registrada com sucesso!");
         setOpen(false);
         const pessoas = await Api.pegarPessoas();
         if (pessoas) {
-          setData(pessoas);
+          const pessoasConverted = pessoas.map((p) => ({
+            idPessoa: p.id_pessoa,
+            nome: p.nome,
+            rua: p.rua,
+            numero: String(p.numero),
+            cidade: p.cidade,
+            telefone1: p.telefone1 ? String(p.telefone1) : null,
+            telefone2: p.telefone2 ? String(p.telefone2) : null,
+            email: p.email,
+            senha: p.senha,
+            dataNascimento: new Date(p.data_nascimento),
+            tipo: p.tipo,
+          }));
+          setData(pessoasConverted);
         }
       } else if (statusCodeValue === 409) {
         toast.error(response?.data?.body || "Email já cadastrado!");
@@ -286,19 +306,23 @@ export function PessoasDashboard({pessoa}) {
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error('Erro detalhado:', {
+        console.error("Erro detalhado:", {
           message: error.message,
           responseData: error.response?.data,
           status: error.response?.status,
           statusCodeValue: error.response?.data?.statusCodeValue, // Captura adicional de statusCodeValue
         });
-        toast.error(`Erro ao registrar pessoa: ${error.response?.data?.body || error.message || 'Erro desconhecido'}`);
+        toast.error(
+          `Erro ao registrar pessoa: ${
+            error.response?.data?.body || error.message || "Erro desconhecido"
+          }`
+        );
       } else {
-        console.error('Erro ao registrar pessoa:', error);
+        console.error("Erro ao registrar pessoa:", error);
         toast.error("Erro ao registrar pessoa.");
       }
     }
-  };  
+  };
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
@@ -433,7 +457,10 @@ export function PessoasDashboard({pessoa}) {
                     id="numero"
                     value={novaPessoa.numero}
                     onChange={(e) =>
-                      setNovaPessoa({ ...novaPessoa, numero: Number(e.target.value) })
+                      setNovaPessoa({
+                        ...novaPessoa,
+                        numero: Number(e.target.value),
+                      })
                     }
                     className="col-span-3"
                   />
@@ -563,73 +590,91 @@ export function PessoasDashboard({pessoa}) {
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          <Dialog open={openAdicionarAluno} onOpenChange={setOpenAdicionarAluno}>
-        <DialogTrigger asChild>
-          <Button>Adicionar Aluno</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Adicionar Aluno à Disciplina</DialogTitle>
-            <DialogDescription>
-              Selecione o aluno e a disciplina para adicionar.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            {/* Selecionar Aluno */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="aluno" className="text-right">
-                Aluno
-              </Label>
-              <Select
-                onValueChange={(value) => setAlunoSelecionado(Number(value))}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Selecione um aluno" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Alunos</SelectLabel>
-                    {data.map((aluno, index) => (  
-                      <SelectItem key={index} value={String(aluno.id_pessoa)}>
-                        {aluno.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-            {/* Selecionar Disciplina */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="disciplina" className="text-right">
-                Disciplina
-              </Label>
-              <Select
-                onValueChange={(value) => setDisciplinaSelecionada(Number(value))}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Selecione uma disciplina" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Disciplinas</SelectLabel>
-                    {disciplinas.map((disciplina, index) => (
-                      <SelectItem key={disciplina.id_disciplina} value={String(disciplina.id_disciplina)}>
-                        {disciplina.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button onClick={handleAdicionarAlunoADisciplina}>Adicionar</Button>
-            <Button variant="ghost" onClick={() => setOpenAdicionarAluno(false)}>
-              Cancelar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          <Dialog
+            open={openAdicionarAluno}
+            onOpenChange={setOpenAdicionarAluno}
+          >
+            <DialogTrigger asChild>
+              <Button>Adicionar Aluno</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>Adicionar Aluno à Disciplina</DialogTitle>
+                <DialogDescription>
+                  Selecione o aluno e a disciplina para adicionar.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                {/* Selecionar Aluno */}
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="aluno" className="text-right">
+                    Aluno
+                  </Label>
+                  <Select
+                    onValueChange={(value) =>
+                      setAlunoSelecionado(Number(value))
+                    }
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Selecione um aluno" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Alunos</SelectLabel>
+                        {data.map((aluno, index) => (
+                          <SelectItem
+                            key={index}
+                            value={String(aluno.idPessoa)}
+                          >
+                            {aluno.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {/* Selecionar Disciplina */}
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="disciplina" className="text-right">
+                    Disciplina
+                  </Label>
+                  <Select
+                    onValueChange={(value) =>
+                      setDisciplinaSelecionada(Number(value))
+                    }
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Selecione uma disciplina" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Disciplinas</SelectLabel>
+                        {disciplinas.map((disciplina, index) => (
+                          <SelectItem
+                            key={disciplina.id_disciplina}
+                            value={String(disciplina.id_disciplina)}
+                          >
+                            {disciplina.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button onClick={handleAdicionarAlunoADisciplina}>
+                  Adicionar
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setOpenAdicionarAluno(false)}
+                >
+                  Cancelar
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
       <div className="rounded-md border">

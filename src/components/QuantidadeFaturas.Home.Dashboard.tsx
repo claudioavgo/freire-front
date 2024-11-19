@@ -21,7 +21,7 @@ export function QuantidadeFaturas({ pessoa }: Props) {
       }
     };
     pegarFaturas();
-  }, []);
+  }, [pessoa.idPessoa]);
 
   return (
     <div className="p-3 flex justify-center items-center border rounded-xl space-x-5 w-fit">

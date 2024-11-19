@@ -23,7 +23,7 @@ export function PresencaStreak({ className, pessoa }: Props) {
       }
     };
     pegarCadeiras();
-  }, []);
+  }, [pessoa.idPessoa]);
 
   return (
     <div className="relative p-3 flex justify-center items-center border rounded-xl space-x-5 w-fit card-shine-effect">

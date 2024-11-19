@@ -11,9 +11,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, MoreHorizontal } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -31,49 +30,74 @@ import {
 } from "@/components/ui/table";
 import { useMemo, useState } from "react";
 import { AlunoMatriculado } from "@/types/alunoMatriculado.type";
+import { Api } from "@/lib/api";
+import { toast } from "sonner"; // Para mensagens de feedback
 
 interface Props {
   alunos: AlunoMatriculado[];
+  idProfessor: number;
 }
 
-export function TabelaEstudantes({ alunos }: Props) {
+export function TabelaPresenca({ alunos, idProfessor }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const [presencas, setPresencas] = useState<{ [key: number]: number }>({}); // Armazena 0 (ausente) ou 1 (presente)
+
+  // Toggle presença para o aluno específico usando id (somente para ausentes)
+  const togglePresenca = (id: number) => {
+    setPresencas((prevState) => ({
+      ...prevState,
+      [id]: prevState[id] === 0 ? 1 : 0, // Alterna entre 1 (presente) e 0 (ausente)
+    }));
+  };
+
+  // Função para registrar chamada
+  const registrarChamada = async () => {
+    console.log("Função registrarChamada chamada");
+    try {
+      await Api.registrarChamada(
+        idProfessor,
+        alunos.map((aluno) => ({
+          idPessoa: aluno.id,
+          status: presencas[aluno.id] ?? 1, // Por padrão, assume 1 (presente) se não estiver definido
+        }))
+      );
+      toast.success("Chamada registrada com sucesso");
+    } catch (error) {
+      toast.error("Erro ao registrar a chamada");
+    }
+  };
 
   const columns = useMemo(
     () => [
       {
         header: "Nome",
         accessorKey: "nome_aluno",
+        enableSorting: true,
       },
       {
         header: "Email",
         accessorKey: "email_aluno",
+        enableSorting: true,
       },
       {
-        header: "Período",
-        accessorKey: "periodo_aluno",
-      },
-      {
-        header: "Notas",
-        accessorKey: "notas",
+        header: "Presença",
         cell: ({ row }) => {
-          const notas = row.original.notas;
-          if (Array.isArray(notas)) {
-            return notas.join(' | ');
-          }
-          if (typeof notas === 'string') {
-            return notas.split(',').join(' | ');
-          }
-          return notas;
+          const id = row.original.id; // Certifique-se de usar o campo correto para o ID
+          return (
+            <input
+              type="checkbox"
+              checked={presencas[id] === 0} // Marcado apenas para ausentes
+              onChange={() => togglePresenca(id)}
+            />
+          );
         },
       },
     ],
-    []
+    [presencas]
   );
-  
 
   const table = useReactTable({
     data: alunos,
@@ -97,7 +121,7 @@ export function TabelaEstudantes({ alunos }: Props) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Filtrando por nome"
           value={
@@ -119,23 +143,27 @@ export function TabelaEstudantes({ alunos }: Props) {
               .getAllColumns()
               .filter((column) => column.getCanHide())
               .map((column) => {
+                const displayName = {
+                  nome_aluno: "Nome",
+                  email_aluno: "Email",
+                  presenca: "Faltou",
+                }[column.id] || column.id;
+
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
                     className="capitalize"
                     checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
+                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
                   >
-                    {column.id}
+                    {displayName}
                   </DropdownMenuCheckboxItem>
                 );
               })}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border" style={{ maxHeight: '400px', overflowY: 'auto' }}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -159,7 +187,6 @@ export function TabelaEstudantes({ alunos }: Props) {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className=""
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="py-4">
@@ -184,7 +211,7 @@ export function TabelaEstudantes({ alunos }: Props) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-between py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} de{" "}
           {table.getFilteredRowModel().rows.length} coluna(s) selecionadas.
@@ -208,8 +235,11 @@ export function TabelaEstudantes({ alunos }: Props) {
           </Button>
         </div>
       </div>
+      <div className="py-4">
+        <Button onClick={registrarChamada}>Registrar Chamada</Button>
+      </div>
     </div>
   );
 }
 
-export default TabelaEstudantes;
+export default TabelaPresenca;

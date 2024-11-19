@@ -499,4 +499,28 @@ export class Api {
       return null;
     }
   }
+
+  static async registrarChamada(
+    idProfessor: number,
+    faltas: { idPessoa: number; status: boolean }[]
+  ) {
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}/professor/chamada`,
+        {
+          idProfessor,
+          faltas,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao registrar chamada:", error);
+      throw error;
+    }
+  }
 }

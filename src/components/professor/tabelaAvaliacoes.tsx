@@ -107,7 +107,9 @@ export function TabelaAvaliacoes({
         accessorKey: "data",
         cell: ({ row }) => {
           const dataLocal = new Date(row.original.data);
-          const dataFormatada = new Date(dataLocal.getTime() + dataLocal.getTimezoneOffset() * 60000).toLocaleDateString("pt-BR", {
+          const dataFormatada = new Date(
+            dataLocal.getTime() + dataLocal.getTimezoneOffset() * 60000
+          ).toLocaleDateString("pt-BR", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
@@ -139,7 +141,9 @@ export function TabelaAvaliacoes({
                 >
                   Editar Avaliação
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => deletarAvaliacao(id_avaliacao)}>
+                <DropdownMenuItem
+                  onClick={() => deletarAvaliacao(id_avaliacao)}
+                >
                   Deletar Avaliação
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -148,7 +152,7 @@ export function TabelaAvaliacoes({
         },
       },
     ],
-    [deletarAvaliacao, verResultados]
+    [deletarAvaliacao, editarAvaliacao, verResultados]
   );
 
   const table = useReactTable({

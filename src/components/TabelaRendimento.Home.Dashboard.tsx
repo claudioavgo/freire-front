@@ -45,7 +45,7 @@ export function TabelaRendimento({ className, pessoa }: Props) {
     };
 
     pegarAvaliacoes();
-  }, []);
+  }, [pessoa.idPessoa]);
 
   const calcularMediaAvaliacoes = (avaliacoes: Avaliacao[]) => {
     const mediaAvaliacoes: { [key: string]: { total: number; count: number } } =
@@ -61,7 +61,9 @@ export function TabelaRendimento({ className, pessoa }: Props) {
 
     return Object.keys(mediaAvaliacoes).map((cadeira) => ({
       cadeira,
-      media: Number(mediaAvaliacoes[cadeira].total / mediaAvaliacoes[cadeira].count).toFixed(2),
+      media: Number(
+        mediaAvaliacoes[cadeira].total / mediaAvaliacoes[cadeira].count
+      ).toFixed(2),
     }));
   };
 

@@ -61,7 +61,7 @@ export function TabelaPresenca({ alunos, idProfessor }: Props) {
         idProfessor,
         alunos.map((aluno) => ({
           idPessoa: aluno.id,
-          status: presencas[aluno.id] ?? 1, // Por padrão, assume 1 (presente) se não estiver definido
+          status: (presencas[aluno.id] ?? 1) === 1, // Converte para booleano
         }))
       );
       toast.success("Chamada registrada com sucesso");
@@ -143,18 +143,21 @@ export function TabelaPresenca({ alunos, idProfessor }: Props) {
               .getAllColumns()
               .filter((column) => column.getCanHide())
               .map((column) => {
-                const displayName = {
-                  nome_aluno: "Nome",
-                  email_aluno: "Email",
-                  presenca: "Faltou",
-                }[column.id] || column.id;
+                const displayName =
+                  {
+                    nome_aluno: "Nome",
+                    email_aluno: "Email",
+                    presenca: "Faltou",
+                  }[column.id] || column.id;
 
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
                     className="capitalize"
                     checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
                   >
                     {displayName}
                   </DropdownMenuCheckboxItem>
@@ -163,7 +166,10 @@ export function TabelaPresenca({ alunos, idProfessor }: Props) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+      <div
+        className="rounded-md border"
+        style={{ maxHeight: "400px", overflowY: "auto" }}
+      >
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

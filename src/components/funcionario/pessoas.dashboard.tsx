@@ -60,6 +60,7 @@ import {
 } from "@/components/ui/select";
 import { usePessoaContext } from "@/contexts/pessoa-context";
 import { toast } from "sonner";
+import axios from "axios";
 
 interface PessoasDashboardProps {
 
@@ -211,50 +212,58 @@ export function PessoasDashboard({pessoa}) {
   const [mostrarCamposProfessor, setMostrarCamposProfessor] = useState(false);
 
   const handleAdicionarPessoa = async () => {
-    if (!novaPessoa.nome || !novaPessoa.email || !novaPessoa.senha) {
-      toast.error("Por favor preencha todos os campos obrigatórios");
-      return;
-    }
-  
-    const formattedPessoa = {
-      ...novaPessoa,
-      numero: novaPessoa.numero,
-      dataNascimento: new Date(novaPessoa.dataNascimento).toISOString().split('T')[0],
-      telefone1: novaPessoa.telefone1 || null,
-      telefone2: novaPessoa.telefone2 || null,
-      periodo: novaPessoa.periodo || null,
-      especializacao: novaPessoa.especializacao || null
-    };
-  
     try {
-      console.log('Dados sendo enviados:', formattedPessoa);
-      
-      const response = await Api.adicionarPessoa(formattedPessoa);
+      if (!novaPessoa.nome || !novaPessoa.email || !novaPessoa.senha) {
+        toast.error("Por favor, preencha todos os campos obrigatórios.");
+        return;
+      }
   
-      if (response && response.status === 201) {
+      const formattedPessoa = {
+        ...novaPessoa,
+        numero: novaPessoa.numero,
+        dataNascimento: new Date(novaPessoa.dataNascimento).toISOString().split('T')[0],
+        telefone1: novaPessoa.telefone1 || null,
+        telefone2: novaPessoa.telefone2 || null,
+        periodo: novaPessoa.periodo || null,
+        especializacao: novaPessoa.especializacao || null,
+      };
+  
+      console.log('Dados sendo enviados:', formattedPessoa);
+  
+      const response = await Api.adicionarPessoa(formattedPessoa);
+      console.log('Resposta completa:', response);
+  
+      const statusCodeValue = response?.data?.statusCodeValue;
+      console.log('statusCodeValue:', statusCodeValue);
+      if (statusCodeValue === 201) {
         toast.success("Pessoa registrada com sucesso!");
         setOpen(false);
         const pessoas = await Api.pegarPessoas();
         if (pessoas) {
           setData(pessoas);
         }
+      } else if (statusCodeValue === 409) {
+        toast.error(response.data?.body || "Email já cadastrado!");
+      } else if (statusCodeValue === 401) {
+        toast.error("Não autorizado!");
       } else {
-        console.log('Resposta da API:', response);
         toast.error("Erro ao registrar pessoa.");
       }
-    } catch (error: any) {
-      console.error('Erro detalhado:', {
-        message: error?.message,
-        response: error?.response?.data,
-        status: error?.response?.status,
-        stack: error?.stack
-      });
-      
-      const errorMessage = error?.response?.data?.message || error?.message || 'Erro desconhecido';
-      toast.error(`Erro ao registrar pessoa: ${errorMessage}`);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Erro detalhado:', {
+          message: error.message,
+          responseData: error.response?.data,
+          status: error.response?.status,
+          statusCodeValue: error.response?.data?.statusCodeValue, // Captura adicional de statusCodeValue
+        });
+        toast.error(`Erro ao registrar pessoa: ${error.response?.data?.body || error.message || 'Erro desconhecido'}`);
+      } else {
+        console.error('Erro ao registrar pessoa:', error);
+        toast.error("Erro ao registrar pessoa.");
+      }
     }
-  };
-
+  };  
   return (
     <div className="w-full">
       <div className="flex items-center py-4">

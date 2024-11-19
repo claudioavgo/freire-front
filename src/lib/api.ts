@@ -463,7 +463,7 @@ export class Api {
   static async adicionarPessoa(novaPessoa: adicionarPessoa) {
     try {
       console.log('Payload being sent:', novaPessoa);
-  
+      
       const response = await axios.post(
         this.baseUrl + `/secretaria/cadastrar`,
         novaPessoa,
@@ -473,16 +473,13 @@ export class Api {
           },
         }
       );
-      return response.data;
-    } catch (error) {
+      // Return full response to check status
+      return response;
+    } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        console.error("Error details:", {
-          message: error.message,
-          response: error.response?.data,
-          status: error.response?.status,
-        });
+        return error.response;
       }
-      return null;
+      throw error;
     }
   }
 

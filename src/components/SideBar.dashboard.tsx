@@ -1,6 +1,6 @@
 "use client";
 
-import { BookCopy, Home, Landmark, Settings } from "lucide-react";
+import { BookCopy, Home, Landmark, Settings, Users } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -41,12 +41,12 @@ export function SidebarDashboard() {
         icon: Landmark,
       },
     ];
-  } else if (pessoa?.tipo === "funcionario") {
+  } else if (pessoa?.tipo === "secretaria") {
     items = [
       ...items,
       {
-        title: "Configurações",
-        icon: Settings,
+        title: "Pessoas",
+        icon: Users,
       },
     ];
   }

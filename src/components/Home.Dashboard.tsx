@@ -33,10 +33,10 @@ export function HomeDashboard({ className, pessoa }: Props) {
   useEffect(() => {
     const pegarAluno = async () => {
       const cadeiras = await Api.pegarDisciplinas(pessoa?.idPessoa);
-      const faturas = await Api.pegarFaturas(pessoa.idPessoa);
+      const faturas = await Api.faturasPendentes(pessoa.idPessoa);
       if (cadeiras && faturas) {
         setCadeiras(cadeiras);
-        setFaturas(faturas.length);
+        setFaturas(faturas.total_pendentes);
       }
     };
 

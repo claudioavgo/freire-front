@@ -221,7 +221,7 @@ export function PessoasDashboard({ pessoa }) {
   useEffect(() => {
     const fetchDados = async () => {
       try {
-        const disciplinasResponse = await Api.pegarDisciplinas();
+        const disciplinasResponse = await Api.pegarTodasDisciplinas();
         if (disciplinasResponse) setDisciplinas(disciplinasResponse);
       } catch (error) {
         toast.error("Erro ao carregar alunos e disciplinas.");

@@ -8,6 +8,8 @@ import { Label } from "./ui/label";
 import { LoaderCircle } from "lucide-react";
 import { TextEffect } from "./motion-ui/text-effect";
 
+// TESTE
+
 interface LoginTipsProps {
   className?: string;
 }

@@ -1,3 +1,5 @@
+// src/app/(auth)/dashboard/page.tsx
+
 "use client";
 
 import { DisciplinasDashboard } from "@/components/Disciplinas.Dashboard";
@@ -7,10 +9,17 @@ import { HomeDashboard } from "@/components/Home.Dashboard";
 import { usePessoaContext } from "@/contexts/pessoa-context";
 import { useSidebarContext } from "@/contexts/sidebar-context";
 import { Loader } from "lucide-react";
+import { useEffect } from "react";
 
 export default function Dashboard() {
-  const { selectedButton } = useSidebarContext();
+  const { selectedButton, setSelectedButton } = useSidebarContext();
   const { pessoa } = usePessoaContext();
+
+  useEffect(() => {
+    if (pessoa?.tipo === "secretaria") {
+      setSelectedButton("Pessoas");
+    }
+  }, [pessoa, setSelectedButton]);
 
   if (!pessoa) {
     return (
@@ -30,7 +39,6 @@ export default function Dashboard() {
       {selectedButton === "Pessoas" && <PessoasDashboard pessoa={pessoa} />}
       {selectedButton === "Disciplinas" && (
         <DisciplinasDashboard pessoa={pessoa} />
-        
       )}
       {selectedButton === "Financeiro" && (
         <FinanceiroDashboard pessoa={pessoa} />

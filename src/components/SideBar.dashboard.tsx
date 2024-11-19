@@ -43,7 +43,7 @@ export function SidebarDashboard() {
     ];
   } else if (pessoa?.tipo === "secretaria") {
     items = [
-      ...items,
+      //...items,
       {
         title: "Pessoas",
         icon: Users,

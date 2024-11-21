@@ -240,10 +240,13 @@ export function PessoasDashboard({ pessoa }) {
           alunoSelecionado,
           disciplinaSelecionada
         );
-        if (response) {
+        if (response.statusCodeValue === 201) {
           toast.success("Aluno adicionado à disciplina com sucesso!");
           setOpenAdicionarAluno(false);
-        } else {
+        } else if (response.statusCodeValue === 409) {
+          toast.error(response?.data?.body || "Aluno já cadastrado na disciplina.");
+        }
+        else {
           toast.error("Erro ao adicionar aluno à disciplina.");
         }
       } catch (error) {
